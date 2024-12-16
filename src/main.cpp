@@ -1,18 +1,26 @@
 #include <Arduino.h>
+#include <Arduino.h>
+#include "HX711.h"
 
-#define pressureSensor 27 // Onboard LED (check your board's pin if this doesn't work)
-//#define extLED 32
+#define DOUT 25  // Daten-Pin
+#define SCK 33    // Clock-Pin
+
+HX711 scale;
 
 void setup() {
-  pinMode(pressureSensor, INPUT);
-  //pinMode(extLED, OUTPUT);
-  Serial.begin(115200);
-  Serial.println("Setup complete. Starting LED test...");
+    Serial.begin(115200);
+    scale.begin(DOUT, SCK);
+    Serial.println("Starte HX711...");
 }
 
 void loop() {
-    double sensorData = analogRead(pressureSensor);
-    Serial.print("Sensor Data:");
-    Serial.println(sensorData);
-    delay(1000);
+    if (scale.is_ready()) {
+        long reading = scale.get_units();
+        Serial.print("Messwert: ");
+        Serial.println(reading);
+    } else {
+        Serial.println("HX711 nicht bereit.");
+    }
+    delay(500);
 }
+
